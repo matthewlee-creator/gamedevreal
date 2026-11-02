@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HOI4 Grand Strategy Web (1936-1955)</title>
+  <style>
+    body { margin: 0; background-color: #12161a; font-family: sans-serif; color: #fff; display: flex; flex-direction: column; height: 100vh; }
+    #top-bar { height: 40px; background: #222b35; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 2px solid #3a4756; }
+    #main-container { display: flex; flex: 1; }
+    #sidebar { width: 280px; background: #1a2129; border-right: 1px solid #2d3846; padding: 12px; }
+    #map-viewport { flex: 1; position: relative; }
+    canvas { width: 100%; height: 100%; display: block; }
+    button { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 4px 12px; cursor: pointer; }
+    button:hover { background: #4a637d; }
+  </style>
+</head>
+<body>
+
+  <div id="top-bar">
+    <div><strong>Nation:</strong> <span id="ui-nation">German Reich</span> | <strong>Ideology:</strong> Fascism</div>
+    <div><strong>Date:</strong> <span id="ui-date">1936-01-01</span></div>
+    <div>
+      <button id="btn-pause">Pause</button>
+      <button onclick="game.setSpeed(1)">1x</button>
+      <button onclick="game.setSpeed(3)">3x</button>
+      <button onclick="game.setSpeed(5)">5x</button>
+    </div>
+  </div>
+
+  <div id="main-container">
+    <div id="sidebar">
+      <h3>National Status</h3>
+      <p>Stability: <strong id="ui-stability">85.0%</strong></p>
+      <p>Civilian Factories: <span id="ui-civ-fac">35</span></p>
+      <p>Military Factories: <span id="ui-mil-fac">28</span></p>
+      <hr>
+      <h3>Active Production</h3>
+      <div id="production-list">
+        <p>Infantry Equipment: 15/day</p>
+        <p>Light Tanks: 4/day</p>
+      </div>
+    </div>
+
+    <div id="map-viewport">
+      <canvas id="hoi4Canvas" width="900" height="600"></canvas>
+    </div>
+  </div>
+
+  <script src="game-engine.js"></script>
+  <script src="combat-engine.js"></script>
+  <script src="map-renderer.js"></script>
+  <script>
+    const game = new HOI4GameEngine('GER', 'normal');
+    const renderer = new HOI4MapRenderer('hoi4Canvas', game);
+
+    // UI Tick Callback
+    game.onUIUpdate = (state) => {
+      document.getElementById('ui-date').innerText = state.date;
+      document.getElementById('ui-stability').innerText = state.stability;
+      renderer.render();
+    };
+
+    document.getElementById('btn-pause').addEventListener('click', () => {
+      game.togglePause();
+      document.getElementById('btn-pause').innerText = game.isPaused ? 'Play' : 'Pause';
+    });
+
+    renderer.render();
+  </script>
+</body>
+</html>
